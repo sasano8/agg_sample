@@ -56,6 +56,19 @@ def watch_queue(token):
                         run.completed = False
                         session.add(run)
                         session.commit()
+                        
+                        if run.entrypoint == "docker":
+                            ...
+                        elif run.entrypoint == "k8s":
+                            "kubectl create job hello-world --image=hello-world"
+                            "kubectl get jobs"
+                            """
+                            NAME         COMPLETIONS DURATION AGE
+                            hello-world  1/1         5s       2ms
+                            """
+                            "kubectl delete jobs hello-world"
+                        else:
+                            raise Exception(f"Not supported entrypoint: {run.entrypoint}")
 
                         result = run_shell(run.entrypoint, *cmd)
                         run.started = True
