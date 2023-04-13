@@ -52,9 +52,11 @@ def setup_views(app: FastAPI, admin: RootView):
         ConfigExecutorProfileAdmin,
         ConfigUpstreamAdmin,
         ConfigAggregatorAdmin,
+        ConfigPartyAdmin,
         ConfigExperimentAdmin,
         RunAdmin,
     )
+    from chocorate.system.views import SystemAdmin
 
     admin.add_view(ConfigTenantAdmin)
     admin.add_view(ConfigExecutorAdmin)
@@ -62,7 +64,9 @@ def setup_views(app: FastAPI, admin: RootView):
     admin.add_view(ConfigUpstreamAdmin)
     admin.add_view(ConfigAggregatorAdmin)
     admin.add_view(ConfigExperimentAdmin)
+    admin.add_view(ConfigPartyAdmin)
     admin.add_view(RunAdmin)
+    admin.add_view(SystemAdmin)
 
 
 app = FastAPI(swagger_ui_parameters={"tryItOutEnabled": True})

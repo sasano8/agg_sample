@@ -7,6 +7,7 @@ from .models import (
     ConfigUpstream,
     ConfigExecutor,
     ConfigExecutorProfile,
+    ConfigParty,
 )
 
 
@@ -16,6 +17,10 @@ class ConfigTenantAdmin(ModelView, model=ConfigTenant):
 
 class ConfigAggregatorAdmin(ModelView, model=ConfigAggregator):
     column_list = list(ConfigAggregator.__fields__)
+
+
+class ConfigPartyAdmin(ModelView, model=ConfigParty):
+    column_list = list(ConfigParty.__fields__)
 
 
 class ConfigExperimentAdmin(ModelView, model=ConfigExperiment):

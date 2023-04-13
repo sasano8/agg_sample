@@ -71,6 +71,13 @@ class ConfigAggregator(SQLModel, table=True):
         ...
 
 
+class ConfigParty(SQLModel, table=True):
+    id: int = Field(primary_key=True)
+    agg_config: int
+    name: str
+    description: str = ""
+
+
 class ConfigExperiment(SQLModel, table=True):
     id: int = Field(primary_key=True)
     name: str
@@ -104,8 +111,7 @@ class ConfigExecutor(SQLModel, table=True):
 
 class Run(SQLModel, table=True):
     id: int = Field(primary_key=True)
-    # type: Literal["docker", "k8s", "shell"]
-    entrypoint: str = "docker"
+    entrypoint: str = "docker"  # Literal["docker", "k8s", "shell"]
     command: str = '["run", "--rm", "hello-world"]'
     started: bool = False
     completed: bool = False

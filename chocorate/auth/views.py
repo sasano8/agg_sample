@@ -6,15 +6,18 @@ from starlette.exceptions import HTTPException
 from chocorate.abc.configs import APP_SECRET
 
 
+DUMMY_ID_STORE = {"admin": "admin", "user": "user"}
+
+
 class AdminAuth(AuthenticationBackend):
     async def login(self, request: Request) -> bool:
         form = await request.form()
         username, password = form["username"], form["password"]
 
-        if username != "admin":
+        if username not in DUMMY_ID_STORE:
             raise HTTPException(401)
 
-        if password != "admin":
+        if password not in DUMMY_ID_STORE.values():
             raise HTTPException(401)
 
         # Validate username/password credentials
