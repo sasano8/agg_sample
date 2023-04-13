@@ -19,7 +19,9 @@ def make_engine():
 
 def create_admin_view(engine):
     from sqladmin import Admin
-    admin_view  = Admin(app, engine, title="Chocorate")
+    from chocorate.auth.views import authentication_backend
+
+    admin_view  = Admin(app, engine, title="Chocorate", authentication_backend=authentication_backend)
     return admin_view
 
 
