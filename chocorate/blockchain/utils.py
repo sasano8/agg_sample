@@ -27,7 +27,7 @@ class BlockChainNetworkNode:
 
 
 class Block:
-    def __init__(self ,index, timestamp, data, previous_hash):
+    def __init__(self, index, timestamp, data, previous_hash):
         self.index = index
         self.timestamp = timestamp
         self.data = data
@@ -37,5 +37,3 @@ class Block:
     def calculate_hash(self):
         block_string = json.dumps(self.__dict__, sort_keys=True)
         return hashlib.sha256(block_string.encode()).hexdigest()
-
-

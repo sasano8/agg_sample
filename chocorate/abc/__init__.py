@@ -1,1 +1,3 @@
-from .configs import config
+from chocorate.abc._state import AppState
+
+state = AppState()

@@ -8,9 +8,7 @@ import joblib
 REPO_ID = "YOUR_REPO_ID"
 FILENAME = "sklearn_model.joblib"
 
-model = joblib.load(
-    hf_hub_download(repo_id=REPO_ID, filename=FILENAME)
-)
+model = joblib.load(hf_hub_download(repo_id=REPO_ID, filename=FILENAME))
 
 
 # git を使用する場合

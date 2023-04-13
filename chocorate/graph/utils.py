@@ -5,17 +5,21 @@ from py2neo import Graph
 def commit(tx):
     return tx.commit()
 
+
 def init(tx):
     # ユニーク制約
     query = "CREATE CONSTRAINT unique_model_id ON (x:Model) ASSERT x.id IS UNIQUE"
     tx.append(query)
 
+
 def delete_all(tx):
     delete_models(tx)
+
 
 def add_models(tx, models):
     for model in models:
         tx.append("CREATE (person:Model name: $name) RETURN person", name=model["id"])
+
 
 def delete_models(tx):
     query = """MATCH (n)

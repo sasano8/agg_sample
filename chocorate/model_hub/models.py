@@ -24,9 +24,10 @@ class Hub(SQLModel, table=True):
 class HanggingFace:
     ...
 
+
 class MLFlow:
     ...
 
+
 class XData:
     ...
-

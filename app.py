@@ -1,6 +1,8 @@
-from sqlmodel import SQLModel, create_engine
+from sqlmodel import create_engine
 from fastapi import FastAPI
 from sqladmin import Admin as RootView
+from chocorate.abc import db
+
 
 def depend(*args, **kwargs):
     def wrapper(func):
@@ -17,11 +19,14 @@ def make_engine():
     )
     return engine
 
+
 def create_admin_view(engine):
     from sqladmin import Admin
     from chocorate.auth.views import authentication_backend
 
-    admin_view  = Admin(app, engine, title="Chocorate", authentication_backend=authentication_backend)
+    admin_view = Admin(
+        app, engine, title="Chocorate", authentication_backend=authentication_backend
+    )
     return admin_view
 
 
@@ -33,9 +38,11 @@ def setup_routers(app: FastAPI):
 
 
 def setup_handlers(app: FastAPI):
-    from chocorate.executor.handlers import add_handler
+    from chocorate.abc.handlers import add_handler as abc_handler
+    from chocorate.executor.handlers import add_handler as executor_handler
 
-    add_handler(app)
+    abc_handler(app)
+    executor_handler(app)
 
 
 def setup_views(app: FastAPI, admin: RootView):
@@ -58,12 +65,11 @@ def setup_views(app: FastAPI, admin: RootView):
     admin.add_view(RunAdmin)
 
 
-
 app = FastAPI(swagger_ui_parameters={"tryItOutEnabled": True})
-engine = make_engine()
+engine = db.get_default_engine()
 admin_view = create_admin_view(engine)
 
 setup_routers(app)
 setup_handlers(app)
 setup_views(app, admin_view)
-SQLModel.metadata.create_all(engine)  # Create tables
+db.create_all(engine)

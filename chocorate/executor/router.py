@@ -1,6 +1,5 @@
 from fastapi import APIRouter, HTTPException
 from fastapi.responses import HTMLResponse, PlainTextResponse
-from .handlers import QUEUE, COMPLTED
 
 
 ci_router = APIRouter()

@@ -11,6 +11,3 @@ config = Config()
 
 load_dotenv()
 APP_SECRET = environ["CHOCO_SECRET_KEY"]
-
-
-    

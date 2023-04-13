@@ -5,14 +5,15 @@ from starlette.responses import RedirectResponse
 from starlette.exceptions import HTTPException
 from chocorate.abc.configs import APP_SECRET
 
+
 class AdminAuth(AuthenticationBackend):
     async def login(self, request: Request) -> bool:
         form = await request.form()
         username, password = form["username"], form["password"]
-        
+
         if username != "admin":
             raise HTTPException(401)
-            
+
         if password != "admin":
             raise HTTPException(401)
 
@@ -34,5 +35,6 @@ class AdminAuth(AuthenticationBackend):
             return RedirectResponse(request.url_for("admin:login"), status_code=302)
 
         # Check the token in depth
+
 
 authentication_backend = AdminAuth(secret_key=APP_SECRET)

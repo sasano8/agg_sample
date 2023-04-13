@@ -1,8 +1,13 @@
 import subprocess
+from .models import Run
+from sqlalchemy import select
+from typing import cast
+from time import sleep
+import json
+from asyncer import asyncify
 
-
-QUEUE = []
-COMPLTED = []
+from chocorate.abc.db import get_session
+from chocorate.abc import state
 
 
 def add_handler(app):
@@ -14,7 +19,8 @@ def add_handler(app):
     @app.on_event("startup")
     async def startup_event():
         nonlocal task
-        task = asyncio.create_task(watch_queue())
+        awaitable = asyncify(watch_queue)(state)
+        task = asyncio.create_task(awaitable)
 
     @app.on_event("shutdown")
     async def shutdown_event():
@@ -22,26 +28,54 @@ def add_handler(app):
         task.cancel()
 
 
-async def watch_queue():
-    import asyncio
+def watch_queue(token):
+    # TODO: 例外発生時にどこにも情報が通達されないのでハンドラをかませること
+    while token.active:
+        try:
+            with get_session() as session:
+                stmt = select(Run).where(Run.started == False)
+                for run in session.exec(stmt).scalars():
+                    run = cast(Run, run)
+                    print("[RUN START]!!!!!!!")
 
-    global QUEUE
-    global COMPLTED
+                    try:
+                        print(run.command)
+                    except Exception as e:
+                        print(type(run))
+                        print(e)
+                    cmd = json.loads(run.command)
+                    if not isinstance(cmd, list):
+                        run.started = True
+                        run.returncode = -1
+                        run.completed = True
+                        session.add(run)
+                        session.commit()
+                    else:
+                        run.started = True
+                        run.returncode = -1
+                        run.completed = False
+                        session.add(run)
+                        session.commit()
 
-    while True:
-        while QUEUE:
-            cmd = QUEUE.pop(0)
-            print("[RUN START]!!!!!!!")
-            result = run_shell(cmd)
-            print("[RUN END]!!!!!!!")
-            COMPLTED.append(result)
-        await asyncio.sleep(30)
+                        result = run_shell(run.entrypoint, *cmd)
+                        run.started = True
+                        run.completed = True
+                        run.returncode = result["returncode"]
+                        run.result = result["result"]
+                        session.add(run)
+                        session.commit()
+                    print("[RUN END]!!!!!!!")
+
+        except Exception as e:
+            print(e)
+
+        sleep(10)
         print("[WAIT RUN]!!!!!!!")
 
 
-def run_shell(cmd):
+def run_shell(*args):
     with subprocess.Popen(
-        cmd, encoding="UTF-8", stdout=subprocess.PIPE, stderr=subprocess.PIPE
+        args, encoding="UTF-8", stdout=subprocess.PIPE, stderr=subprocess.PIPE
     ) as p:
         success = []
         errors = []
