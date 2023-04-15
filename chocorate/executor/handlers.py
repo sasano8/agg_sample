@@ -5,6 +5,7 @@ from typing import cast
 from time import sleep
 import json
 from asyncer import asyncify
+import datetime
 
 from chocorate.abc.db import get_session
 from chocorate.abc import state
@@ -33,7 +34,7 @@ def watch_queue(token):
     while token.active:
         try:
             with get_session() as session:
-                stmt = select(Run).where(Run.started == False)
+                stmt = select(Run).where(Run.started_at == None)
                 for run in session.exec(stmt).scalars():
                     run = cast(Run, run)
                     print("[RUN START]!!!!!!!")
@@ -45,18 +46,18 @@ def watch_queue(token):
                         print(e)
                     cmd = json.loads(run.command)
                     if not isinstance(cmd, list):
-                        run.started = True
                         run.returncode = -1
-                        run.completed = True
+                        run.started_at = datetime.datetime.now()
+                        run.ended_at = run.started_at
                         session.add(run)
                         session.commit()
                     else:
-                        run.started = True
+                        run.started_at = datetime.datetime.now()
                         run.returncode = -1
-                        run.completed = False
+                        run.ended_at = None
                         session.add(run)
                         session.commit()
-                        
+
                         if run.entrypoint == "docker":
                             ...
                         elif run.entrypoint == "k8s":
@@ -68,11 +69,12 @@ def watch_queue(token):
                             """
                             "kubectl delete jobs hello-world"
                         else:
-                            raise Exception(f"Not supported entrypoint: {run.entrypoint}")
+                            raise Exception(
+                                f"Not supported entrypoint: {run.entrypoint}"
+                            )
 
                         result = run_shell(run.entrypoint, *cmd)
-                        run.started = True
-                        run.completed = True
+                        run.ended_at = datetime.datetime.now()
                         run.returncode = result["returncode"]
                         run.result = result["result"]
                         session.add(run)

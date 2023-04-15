@@ -1,3 +1,4 @@
+import datetime
 from sqlmodel import SQLModel, Field
 
 
@@ -99,6 +100,7 @@ class ConfigExecutorProfile(SQLModel, table=True):
     upstream: int = None
     num: int = 1
     cpu_or_gpu: str = "cpu"
+    max_mem: int = 10
     no_proxy: str = "localhost"
     http_proxy: str = None
     https_proxy: str = None
@@ -113,7 +115,9 @@ class Run(SQLModel, table=True):
     id: int = Field(primary_key=True)
     entrypoint: str = "docker"  # Literal["docker", "k8s", "shell"]
     command: str = '["run", "--rm", "hello-world"]'
-    started: bool = False
-    completed: bool = False
+    started_at: datetime.datetime = None
+    ended_at: datetime.datetime = None
     returncode: int = -1
     result: str = ""
+    # created_at: datetime.datetime = Field(default_factory=datetime.datetime.now)
+    # updated_at: datetime.datetime = Field(default_factory=datetime.datetime.now)

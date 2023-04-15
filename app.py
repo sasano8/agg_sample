@@ -33,8 +33,8 @@ def create_admin_view(engine):
 def setup_routers(app: FastAPI):
     from chocorate.executor.router import ci_router, queue_router
 
-    app.include_router(ci_router, prefix="/ci")
-    app.include_router(queue_router, prefix="/tasks")
+    app.include_router(ci_router, prefix="/v1/api/ci")
+    app.include_router(queue_router, prefix="/v1/api/tasks")
 
 
 def setup_handlers(app: FastAPI):
