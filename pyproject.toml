@@ -17,6 +17,7 @@ python-dotenv = "^1.0.0"
 asyncer = "^0.0.2"
 kubernetes = "^26.1.0"
 boto3 = "^1.26.113"
+orjson = "^3.8.10"
 
 [tool.poetry.group.dev.dependencies]
 # HTTPやDocker API を叩くときに使用（必須ではない）
