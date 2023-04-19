@@ -66,6 +66,41 @@ def get_namespace_info(namespace: str):
     network.connect(container)
 
 
+def run(namespace: str):
+    import docker
+
+    # Dockerクライアントを作成
+    client = docker.from_env()
+
+    # イメージを指定してコンテナを実行
+    # detach=Trueの場合、フォアグランドで実行され、続くpythonスクリプトの実行はブロックされる
+    container = client.containers.run("hello-world", detach=True)
+
+    # コンテナの実行が完了するまで待機
+    container.wait()
+
+    # コンテナの詳細情報を取得
+    container_info = client.api.inspect_container(container.id)
+
+    # コンテナのログを取得
+    logs = container.logs(stdout=True, stderr=True)
+    print("Container logs:")
+    print(logs.decode("utf-8"))
+
+    # コンテナの状態情報を取得
+    container_state = container_info["State"]
+    print("Container state:")
+    print(container_state)
+
+    # コンテナを削除
+    container.remove()
+
+    # Dockerクライアントを閉じる
+    client.close()
+
+
+
+
 
 # dockerでは実行時に任意のラベルを付与することができます
 # docker run --label version=1.0 --label maintainer=your_name@example.com --label description="Sample Python application" -d your_image
